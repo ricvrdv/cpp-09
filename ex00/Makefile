@@ -2,7 +2,7 @@
 # CONFIG                                                                       #
 #==============================================================================#
 
-NAME = bitcoin
+NAME = btc
 
 CXX = c++
 
@@ -14,7 +14,7 @@ RM = rm -rf
 # SOURCE FILES                                                                 #
 #==============================================================================#
 
-SRCS = main.cpp
+SRCS = main.cpp BitcoinExchange.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 
