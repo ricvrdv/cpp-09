@@ -5,6 +5,11 @@
 # include <fstream>
 # include <sstream>
 # include <string>
+# include <cstdlib>
 # include <map>
+
+bool    loadDatabase(const std::string& filename, std::map<std::string, double> &database);
+bool    isValidDate(const std::string& date);
+bool    isValidValue(const std::string& valueStr, double& value);
 
 #endif

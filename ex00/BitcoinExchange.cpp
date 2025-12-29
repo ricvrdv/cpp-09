@@ -1,0 +1,116 @@
+# include "BitcoinExchange.hpp"
+
+bool    loadDatabase(const std::string& filename, std::map<std::string, double> &database) {
+    std::ifstream   databaseFile(filename.c_str());
+    if (!databaseFile.is_open()) {
+        std::cerr << "Error: could not open database file." << std::endl;
+        return false;
+    }
+
+    std::string	line;
+    if (!std::getline(databaseFile, line)) {
+        std::cerr << "Error: database file is empty." << std::endl;
+        return false;
+    }
+
+    if (line.compare("date,exchange_rate") != 0) {
+		std::cerr << "Error: wrong database file header." << std::endl;
+		return false;
+	}
+
+    while (std::getline(databaseFile, line)) {
+        if (line.empty()) {
+            continue;
+        }
+
+        std::istringstream inputStream(line);
+		std::string	date;
+		std::string valueStr;
+
+        if (!std::getline(inputStream, date, ',')) {
+			std::cerr << "Error: invalid line in database." << std::endl;
+            return false;
+		}
+
+		if (!std::getline(inputStream, valueStr)) {
+            std::cerr << "Error: missing value." << std::endl;
+			return false;
+		}
+
+        // Validate date (YYYY-MM-DD)
+		if (!isValidDate(date)) {
+			std::cerr << "Error: invalid date in database => " << date << std::endl;
+			return false;
+		}
+
+        // Validate value
+		double	value;
+		if (!isValidValue(valueStr, value)) {
+			return false;
+		}
+
+        database[date] = value;
+    }
+
+    databaseFile.close();
+    return true;
+}
+
+bool    isValidDate(const std::string& date) {
+    if (date.size() != 10 || date[4] != '-' || date[7] != '-') {
+        return false;
+    }
+
+    // Extract year, month, and day
+    int year = std::atoi(date.substr(0, 4).c_str());
+    int month = std::atoi(date.substr(5, 2).c_str());
+    int day = std::atoi(date.substr(8, 2).c_str());
+
+    if (month < 1 || month > 12 || day < 1 || day > 31) {
+        return false;
+    }
+
+    static const int daysInMonth[] = {0,31,28,31,30,31,30,31,31,30,31,30,31};
+
+    // Check if year is a leap year
+    if (month == 2) {
+        bool leapYear = (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0));
+        
+        if (day > (leapYear ? 29 : 28)) {
+            return false;
+        }
+    }
+    else if (day > daysInMonth[month]) {
+        return false;
+    }
+    
+    return true;
+}
+
+bool    isValidValue(const std::string& valueStr, double& value) {
+    char    *end;
+    const char  *cstr = valueStr.c_str();
+
+    value = std::strtod(cstr, &end);
+    if (end == cstr) {
+        std::cerr << "Error: invalid number => " << valueStr << std::endl;
+        return false;
+    }
+
+    if (*end != '\0') {
+        std::cerr << "Error: trailing characters in number => " << valueStr << std::endl;
+        return false;
+    }
+
+    if (std::isnan(value) || std::isinf(value)) {
+        std::cerr << "Error: invalid number => " << valueStr << std::endl;
+        return false;
+    }
+
+    if (value < 0) {
+        std::cerr << "Error: not a positive number => " << valueStr << std::endl;
+        return false;
+    }
+
+    return true;
+}
