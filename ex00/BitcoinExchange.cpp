@@ -43,7 +43,7 @@ bool    loadDatabase(const std::string& filename, std::map<std::string, double> 
 			return false;
 		}
 
-        // Validate value
+        // Validate exchange rate value
 		double	value;
 		if (!isValidValue(valueStr, value)) {
 			return false;
