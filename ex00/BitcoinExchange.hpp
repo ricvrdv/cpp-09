@@ -9,9 +9,23 @@
 # include <cmath>
 # include <map>
 
-bool    loadDatabase(const std::string& filename, std::map<std::string, double> &database);
-bool    isValidDate(const std::string& date);
-bool    isValidValue(const std::string& valueStr, double& value);
-void    processInputLine();
+class   BitcoinExchange {
+    private:
+        std::map<std::string, double> database_;
+
+        bool    isValidDate(const std::string& date) const;
+        bool    isValidValue(const std::string& valueStr, double& value) const;
+
+    public:
+        BitcoinExchange();
+        BitcoinExchange( const BitcoinExchange &other );
+        BitcoinExchange& operator=( const BitcoinExchange &other );
+        ~BitcoinExchange();
+
+        bool    loadDatabase(const std::string& filename);
+        void    processInputLine(const std::string& line) const;
+
+        std::map<std::string, double>&   getDatabase();
+};
 
 #endif

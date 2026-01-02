@@ -8,8 +8,8 @@ int main(int argc, char **argv) {
 	}
 
 	// 2. Load database into container
-	std::map<std::string, double> btcDatabase;
-	if (!loadDatabase("data.csv", btcDatabase)) {
+	BitcoinExchange	btc;
+	if (!btc.loadDatabase("data.csv")) {
 		return 1;
 	}
 
@@ -31,12 +31,12 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	/*for (std::map<std::string, double>::iterator it = btcDatabase.begin(); it != btcDatabase.end(); it++) {
+	for (std::map<std::string, double>::iterator it = btc.getDatabase().begin(); it != btc.getDatabase().end(); it++) {
 		std::cout << it->first << " => " << it->second << std::endl;
-	}*/
+	}
 
 	while (std::getline(inputFile, line)) {
-		processInputLine(line, btcDatabase);
+		btc.processInputLine(line);
 	}
 
 	inputFile.close();

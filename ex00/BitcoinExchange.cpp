@@ -1,6 +1,26 @@
 # include "BitcoinExchange.hpp"
 
-bool    loadDatabase(const std::string& filename, std::map<std::string, double> &database) {
+// Default Constructor
+BitcoinExchange::BitcoinExchange() {}
+
+// Copy Constructor
+BitcoinExchange::BitcoinExchange( const BitcoinExchange &other ) {
+    *this = other;
+}
+
+// Copy Assignment Operator
+BitcoinExchange& BitcoinExchange::operator=( const BitcoinExchange &other ) {
+    if (this != &other) {
+        this->database_ = other.database_;
+    }
+    return *this;
+}
+
+// Destructor
+BitcoinExchange::~BitcoinExchange() {}
+
+// Public Member functions
+bool    BitcoinExchange::loadDatabase(const std::string& filename) {
     std::ifstream   databaseFile(filename.c_str());
     if (!databaseFile.is_open()) {
         std::cerr << "Error: could not open database file." << std::endl;
@@ -49,14 +69,15 @@ bool    loadDatabase(const std::string& filename, std::map<std::string, double> 
 			return false;
 		}
 
-        database[date] = value;
+        this->database_[date] = value;
     }
 
     databaseFile.close();
     return true;
 }
 
-bool    isValidDate(const std::string& date) {
+// Private Member Functions
+bool    BitcoinExchange::isValidDate(const std::string& date) const {
     if (date.size() != 10 || date[4] != '-' || date[7] != '-') {
         return false;
     }
@@ -87,7 +108,7 @@ bool    isValidDate(const std::string& date) {
     return true;
 }
 
-bool    isValidValue(const std::string& valueStr, double& value) {
+bool    BitcoinExchange::isValidValue(const std::string& valueStr, double& value) const {
     char    *end;
     const char  *cstr = valueStr.c_str();
 
@@ -113,4 +134,12 @@ bool    isValidValue(const std::string& valueStr, double& value) {
     }
 
     return true;
+}
+
+void    BitcoinExchange::processInputLine(const std::string& line) const {
+    (void)line;
+}
+
+std::map<std::string, double>& BitcoinExchange::getDatabase() {
+    return this->database_;
 }
