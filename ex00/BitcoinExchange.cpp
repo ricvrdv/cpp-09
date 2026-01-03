@@ -76,6 +76,13 @@ bool    BitcoinExchange::loadDatabase(const std::string& filename) {
     return true;
 }
 
+void    BitcoinExchange::processInputLine(const std::string& line) const {
+    if (line.empty()) {
+        return;
+    }
+    std::istringstream
+}
+
 // Private Member Functions
 bool    BitcoinExchange::isValidDate(const std::string& date) const {
     if (date.size() != 10 || date[4] != '-' || date[7] != '-') {
@@ -134,10 +141,6 @@ bool    BitcoinExchange::isValidValue(const std::string& valueStr, double& value
     }
 
     return true;
-}
-
-void    BitcoinExchange::processInputLine(const std::string& line) const {
-    (void)line;
 }
 
 std::map<std::string, double>& BitcoinExchange::getDatabase() {
