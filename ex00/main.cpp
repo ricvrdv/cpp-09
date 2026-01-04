@@ -31,9 +31,9 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	for (std::map<std::string, double>::iterator it = btc.getDatabase().begin(); it != btc.getDatabase().end(); it++) {
+	/*for (std::map<std::string, double>::iterator it = btc.getDatabase().begin(); it != btc.getDatabase().end(); it++) {
 		std::cout << it->first << " => " << it->second << std::endl;
-	}
+	}*/
 
 	while (std::getline(inputFile, line)) {
 		btc.processInputLine(line);

@@ -65,7 +65,7 @@ bool    BitcoinExchange::loadDatabase(const std::string& filename) {
 
         // Validate exchange rate value
 		double	value;
-		if (!isValidValue(valueStr, value)) {
+		if (!isValidValue(valueStr, value, false)) {
 			return false;
 		}
 
@@ -80,7 +80,45 @@ void    BitcoinExchange::processInputLine(const std::string& line) const {
     if (line.empty()) {
         return;
     }
-    std::istringstream
+
+    std::istringstream  inputLine(line);
+    std::string date;
+    std::string valueStr;
+
+    if (!std::getline(inputLine, date, '|')) {
+        std::cerr << "Error: bad input => " << line << std::endl;
+        return;
+    }
+
+    if (!std::getline(inputLine, valueStr)) {
+        std::cerr << "Error: bad input => " << line << std::endl;
+        return;
+    }
+
+    while (!date.empty() && std::isspace(date[0])) date.erase(0, 1);
+	while (!date.empty() && std::isspace(date[date.size()-1])) date.erase(date.size()-1);
+	while (!valueStr.empty() && std::isspace(valueStr[0])) valueStr.erase(0, 1);
+	while (!valueStr.empty() && std::isspace(valueStr[valueStr.size()-1])) valueStr.erase(valueStr.size()-1);
+
+    if (!isValidDate(date)) {
+        std::cerr << "Error: bad input => " << line << std::endl;
+        return;
+    }
+
+    double  value;
+    if (!isValidValue(valueStr, value, true)) {
+        return;
+    }
+
+    std::map<std::string, double>::const_iterator it = database_.lower_bound(date);
+    if (it == database_.end() || it->first != date) {
+        if (it == database_.begin()) {
+            return;
+        }
+        it--;
+    }
+
+    std::cout << date << " => " << value << " = " << (value * it->second) << std::endl;
 }
 
 // Private Member Functions
@@ -115,7 +153,7 @@ bool    BitcoinExchange::isValidDate(const std::string& date) const {
     return true;
 }
 
-bool    BitcoinExchange::isValidValue(const std::string& valueStr, double& value) const {
+bool    BitcoinExchange::isValidValue(const std::string& valueStr, double& value, bool is_input) const {
     char    *end;
     const char  *cstr = valueStr.c_str();
 
@@ -137,6 +175,11 @@ bool    BitcoinExchange::isValidValue(const std::string& valueStr, double& value
 
     if (value < 0) {
         std::cerr << "Error: not a positive number => " << valueStr << std::endl;
+        return false;
+    }
+
+    if (is_input && value > 1000) {
+        std::cerr << "Error: too large a number." << std::endl;
         return false;
     }
 

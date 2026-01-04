@@ -14,7 +14,7 @@ class   BitcoinExchange {
         std::map<std::string, double> database_;
 
         bool    isValidDate(const std::string& date) const;
-        bool    isValidValue(const std::string& valueStr, double& value) const;
+        bool    isValidValue(const std::string& valueStr, double& value, bool is_input) const;
 
     public:
         BitcoinExchange();
