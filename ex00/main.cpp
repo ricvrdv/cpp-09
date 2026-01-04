@@ -7,6 +7,11 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
+	if (argc > 2) {
+		std::cerr << "Usage: " << argv[0] << " <input file>" << std::endl;
+		return 1;
+	}
+
 	// 2. Load database into container
 	BitcoinExchange	btc;
 	if (!btc.loadDatabase("data.csv")) {
