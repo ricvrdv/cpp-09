@@ -26,14 +26,14 @@ std::vector<int>&   PmergeMe::getVec() {
     return this->vec_;
 }
 
-void    PmergeMe::sortVector_(std::vector<int>& cont) {
-    int n = cont.size();
+void    PmergeMe::sortVector_(std::vector<int>* cont) {
+    int n = cont->size();
     if (n <= 1) {
         return;
     }
 
-    for (size_t i = 0; cont.size(); i++) {
-        std::cout << cont[i] << std::endl;
+    for (size_t i = 0; cont->size(); i++) {
+        std::cout << *cont[i] << std::endl;
     }
  
     std::vector<std::pair<int, int> >    pairs;
@@ -44,11 +44,11 @@ void    PmergeMe::sortVector_(std::vector<int>& cont) {
     }
 
     if (hasStray) {
-        stray = cont.back();
-        cont.pop_back();
+        stray = cont->back();
+        cont->pop_back();
     }
 
-    for (size_t i = 0; i < cont.size(); i += 2) {
+    for (size_t i = 0; i < cont->size(); i += 2) {
         if (cont[i] > cont[i + 1]) {
             pairs.push_back(std::make_pair(cont[i], cont[i + 1]));
         }
@@ -62,4 +62,11 @@ void    PmergeMe::sortVector_(std::vector<int>& cont) {
         winners.push_back(pairs[i].first);
     }
     winners.push_back(stray);
+}
+
+void    PmergeMe::run(std::vector<int>& cont) {
+    sortVector_(&cont);
+    for (size_t i = 0; i < cont.size(); i++) {
+        std::cout << cont[i] << std::endl;
+    }
 }

@@ -10,7 +10,7 @@ class PmergeMe {
         std::vector<int>    vec_;
         std::deque<int>     deq_;
 
-        void    sortVector_(std::vector<int>& cont);
+        void    sortVector_(std::vector<int>* cont);
 
     public:
         PmergeMe(std::vector<int>& cont);
@@ -19,6 +19,7 @@ class PmergeMe {
         ~PmergeMe();
 
         std::vector<int>&   getVec();
+        void    run(std::vector<int>& cont);
 };
 
 #endif
