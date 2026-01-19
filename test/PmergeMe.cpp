@@ -54,6 +54,16 @@ void    PmergeMe::displaySeq(std::vector<int>& cont) const {
     std::cout << std::endl;
 }
 
+void    PmergeMe::displaySeq2(std::vector<size_t>& cont) const {
+    for (size_t i = 0; i < cont.size(); i++) {
+        std::cout << cont[i];
+        if (i < cont.size() - 1) {
+            std::cout << " ";
+        }
+    }
+    std::cout << std::endl;
+}
+
 std::vector<size_t> generateJacobsthalSeq(size_t n) {
     std::vector<size_t> seq;
     seq.push_back(1);
@@ -128,6 +138,8 @@ void    PmergeMe::sortVector_() {
     displaySeq(pendingChain);
 
     std::vector<size_t> jacobSeq = generateJacobsthalSeq(pendingChain.size());
+    std::cout << "Jacobsthal Sequence: ";
+    displaySeq2(jacobSeq);
     size_t  inserted = 0;
     for (size_t j = 0; j < jacobSeq.size() && inserted < pendingChain.size(); j++) {
         size_t index = std::min(jacobSeq[j], pendingChain.size());
