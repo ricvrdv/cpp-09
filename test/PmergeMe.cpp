@@ -177,3 +177,16 @@ size_t  PmergeMe::binarySearchInsert(const std::vector<int>& cont, int value, si
     }
     return left;
 }
+
+void    PmergeMe::parseInput(int argc, char **argv) {
+    for (int = 1; i < argc; i++) {
+        std::istringstream iss(argv[i]);
+        std::string token;
+
+        while (iss >> token) {
+            if (!isPositiveInteger(token)) {
+                throw std::
+            }
+        }
+    }
+}

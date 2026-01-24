@@ -6,16 +6,20 @@ int main(int argc, char **argv) {
                   << " <positive_integer_sequence>" << std::endl;
         return 1;
     }
+    PmergeMe sorter;
+    sorter.parseInput(argc, argv);
+    // Handle input errors, maybe with try / catch
     // Validate input: argc >= 2 Example: ./PmergeMe 4 2 5 1 OR ./PmergeMe "4 2 5 1" OR ./PmergeMe `shuf -i 1-100000 -n 3000 | tr "\n" " "`
     //  - only positive integers
     //  - no duplicates
     // print "Before: ..."
-    // Instantiate PmergeMe object for std::vector<int> container
-    PmergeMe    vec(argc, argv);
+    std::cout << "Before: " << sorter.getInputSequence() << std::endl;
     // Use class methods to sort the container sequence using Ford-Johnson Algorithm
     //  - Jacobsthal sequence: J(0)=0, J(1)=1, J(n)=J(n-1) + 2*J(n-2) [used to determine which pending element to insert next]
-    vec.sortVector_();
+    sorter.sortVector();
+    sorter.sortDeque();
     // print "After: ..."
+    std::cout << "After: " << sorter.getSortedSequence() << std::endl;
     // print "Time to process a range of n elements with std::[..] : ... us"
     // print "Time to process a range of n elements with std::[..] : ... us"
     return 0;

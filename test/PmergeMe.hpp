@@ -8,6 +8,9 @@
 
 class PmergeMe {
     private:
+        const std::string inputSequence_;
+        std::string sortedSequence_;
+        
         std::vector<int> vec_;
         // Should I store the sequence in unsortedVec_ and sortedVec_?
 
