@@ -178,15 +178,73 @@ size_t  PmergeMe::binarySearchInsert(const std::vector<int>& cont, int value, si
     return left;
 }
 
-void    PmergeMe::parseInput(int argc, char **argv) {
-    for (int = 1; i < argc; i++) {
+bool isPositiveInteger(const std::string &s) {
+    if (s.empty()) {
+        return false;
+    }
+
+    for (size_t i = 0; i < s.length(); i++) {
+        if (!std::isdigit(s[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+int     toInt(const std::string &s) {
+    std::istringstream iss(s);
+    long value;
+
+    iss >> value;
+    if (iss.fail() || !iss.eof()) {
+        throw std::runtime_error("Invalid number");
+    }
+    if (value <= 0 || value > INT_MAX)
+        throw std::runtime_error("Out of range");
+    return static_cast<int>(value);
+}
+
+void    PmergeMe::validateInput(int argc, char **argv) {
+    std::set<int> seen;
+    std::ostringstream oss;
+    bool first = true;
+
+    for (int i = 1; i < argc; i++) {
         std::istringstream iss(argv[i]);
         std::string token;
 
         while (iss >> token) {
             if (!isPositiveInteger(token)) {
-                throw std::
+                throw std::runtime_error("Invalid token");
             }
+            int value = toInt(token);
+
+            if (!seen.insert(value).second)
+                throw std::runtime_error("Duplicate");
+
+            if (!first) {
+                oss << " ";
+            }
+            oss << value;
+            first = false;
         }
     }
+    if (first)
+        throw std::runtime_error("Empty input");
+
+    inputSequence_ = oss.str();
+}
+
+void    PmergeMe::buildContainers() {
+    std::istringstream iss(inputSequence_);
+    int value;
+
+    vec_.clear();
+    while (iss >> value) {
+        vec_.push_back(value);
+    }
+}
+
+const std::string&  PmergeMe::getInputSequence() const {
+    return inputSequence_;
 }

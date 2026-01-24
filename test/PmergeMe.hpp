@@ -2,13 +2,16 @@
 # define PMERGEME_HPP
 
 # include <iostream>
+# include <sstream>
 # include <cstdlib>
+# include <climits>
 # include <vector>
 # include <deque>
+# include <set>
 
 class PmergeMe {
     private:
-        const std::string inputSequence_;
+        std::string inputSequence_;
         std::string sortedSequence_;
         
         std::vector<int> vec_;
@@ -27,6 +30,9 @@ class PmergeMe {
         void    displaySeq2(std::vector<size_t>& cont) const;
         void    sortVector_();
         size_t  binarySearchInsert(const std::vector<int>& cont, int value, size_t left, size_t right);
+        void    validateInput(int argc, char **argv);
+        void    buildContainers();
+        const std::string &getInputSequence() const;
 };
 
 #endif

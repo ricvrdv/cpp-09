@@ -7,19 +7,27 @@ int main(int argc, char **argv) {
         return 1;
     }
     PmergeMe sorter;
-    sorter.parseInput(argc, argv);
+    // Check if input is a valid sequence
+    sorter.validateInput(argc, argv);
+    
+    // Create containers with the valid sequence
+    sorter.buildContainers();
+
+    // Display unsorted input sequence
+    std::cout << "Before: " << sorter.getInputSequence() << std::endl;
+    
     // Handle input errors, maybe with try / catch
     // Validate input: argc >= 2 Example: ./PmergeMe 4 2 5 1 OR ./PmergeMe "4 2 5 1" OR ./PmergeMe `shuf -i 1-100000 -n 3000 | tr "\n" " "`
     //  - only positive integers
     //  - no duplicates
     // print "Before: ..."
-    std::cout << "Before: " << sorter.getInputSequence() << std::endl;
+    //std::cout << "Before: " << sorter.getInputSequence() << std::endl;
     // Use class methods to sort the container sequence using Ford-Johnson Algorithm
     //  - Jacobsthal sequence: J(0)=0, J(1)=1, J(n)=J(n-1) + 2*J(n-2) [used to determine which pending element to insert next]
-    sorter.sortVector();
-    sorter.sortDeque();
+    //sorter.sortVector();
+    //sorter.sortDeque();
     // print "After: ..."
-    std::cout << "After: " << sorter.getSortedSequence() << std::endl;
+    //std::cout << "After: " << sorter.getSortedSequence() << std::endl;
     // print "Time to process a range of n elements with std::[..] : ... us"
     // print "Time to process a range of n elements with std::[..] : ... us"
     return 0;
