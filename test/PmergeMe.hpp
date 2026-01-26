@@ -9,6 +9,13 @@
 # include <deque>
 # include <set>
 
+typedef std::pair<int, std::size_t> ValueIndex;
+
+struct ElementPair {
+    ValueIndex first;
+    ValueIndex second;
+};
+
 class PmergeMe {
     private:
         std::string inputSequence_;

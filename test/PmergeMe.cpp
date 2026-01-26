@@ -124,6 +124,20 @@ const std::deque<int>& PmergeMe::getDeque() const {
     return deq_;
 }
 
+static void makePairs(const std::vector<int> &input,
+    std::vector<ElementPair> &pairs,
+    bool &hasOdd, ValueIndex &oddElement) {
+    pairs.clear();
+    hasOdd = false;
+
+    std::size_t n = input.size();
+    std::size_t i = 0;
+}
+
+void    PmergeMe::mergeInsertionVector(std::vector<int>& vec) {
+
+}
+
 // // Parametric Constructor
 // PmergeMe::PmergeMe(int argc, char **argv) {
 //     for (int i = 1; i < argc; i++) {
