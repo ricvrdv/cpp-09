@@ -16,6 +16,8 @@ struct ElementPair {
     ValueIndex second;
 };
 
+typedef std::vector<ValueIndex> Chain;
+
 class PmergeMe {
     private:
         std::string inputSequence_;
@@ -37,6 +39,7 @@ class PmergeMe {
         const std::string &getInputSequence() const;
         const std::vector<int>& getVector() const;
         const std::deque<int>& getDeque() const;
+        void    mergeInsertionVector(std::vector<int>& vec);
 
         //const std::vector<int>& getVec() const;
         //void    displayCont() const;
@@ -46,7 +49,7 @@ class PmergeMe {
         //size_t  binarySearchInsert(const std::vector<int>& cont, int value, size_t left, size_t right);
 };
 
-const std::vector<size_t> generateJacobsthalSeq(size_t n);
+//const std::vector<size_t> generateJacobsthalSeq(size_t n);
 
 template <typename Container>
 void    printContainer(const Container& cont) {

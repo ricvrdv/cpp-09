@@ -16,9 +16,11 @@ int main(int argc, char **argv) {
     // Create containers with the valid sequence
     sorter.buildContainers();
 
-    printContainer(generateJacobsthalSeq(20));
-    printContainer(sorter.getVector());
-    printContainer(sorter.getDeque());
+    std::vector<int> vec = sorter.getVector();
+    sorter.mergeInsertionVector(vec);
+    //printContainer(generateJacobsthalSeq(20));
+    //printContainer(sorter.getVector());
+    //printContainer(sorter.getDeque());
 
     // Handle input errors, maybe with try / catch
     // Validate input: argc >= 2 Example: ./PmergeMe 4 2 5 1 OR ./PmergeMe "4 2 5 1" OR ./PmergeMe `shuf -i 1-100000 -n 3000 | tr "\n" " "`

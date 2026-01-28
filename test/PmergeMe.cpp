@@ -98,23 +98,23 @@ const std::string&  PmergeMe::getInputSequence() const {
 
 // Generate Jacobsthal sequence
 // Jacobsthal sequence: J(0)=0, J(1)=1, J(n)=J(n-1) + 2*J(n-2)
-const std::vector<size_t> generateJacobsthalSeq(size_t n) {
-    std::vector<size_t> jacobsthalSeq;
+// const std::vector<size_t> generateJacobsthalSeq(size_t n) {
+//     std::vector<size_t> jacobsthalSeq;
 
-    if (n == 0) {
-        return jacobsthalSeq;
-    }
-    jacobsthalSeq.reserve(n);
-    jacobsthalSeq.push_back(0);
-    if (n == 1) {
-        return jacobsthalSeq;
-    }
-    jacobsthalSeq.push_back(1);
-    for (size_t i = 2; i < n; i++) {
-        jacobsthalSeq.push_back(jacobsthalSeq[i - 1] + 2 * jacobsthalSeq[i - 2]);
-    }
-    return jacobsthalSeq;
-}
+//     if (n == 0) {
+//         return jacobsthalSeq;
+//     }
+//     jacobsthalSeq.reserve(n);
+//     jacobsthalSeq.push_back(0);
+//     if (n == 1) {
+//         return jacobsthalSeq;
+//     }
+//     jacobsthalSeq.push_back(1);
+//     for (size_t i = 2; i < n; i++) {
+//         jacobsthalSeq.push_back(jacobsthalSeq[i - 1] + 2 * jacobsthalSeq[i - 2]);
+//     }
+//     return jacobsthalSeq;
+// }
 
 const std::vector<int>& PmergeMe::getVector() const {
     return vec_;
@@ -124,18 +124,77 @@ const std::deque<int>& PmergeMe::getDeque() const {
     return deq_;
 }
 
-static void makePairs(const std::vector<int> &input,
+static void makePairs(const Chain &input,
     std::vector<ElementPair> &pairs,
     bool &hasOdd, ValueIndex &oddElement) {
     pairs.clear();
     hasOdd = false;
-
     std::size_t n = input.size();
-    std::size_t i = 0;
+    
+    for (std::size_t i = 0; i + 1 < n; i += 2) {
+        ElementPair p;
+        p.first = input[i];
+        p.second = input[i + 1];
+        pairs.push_back(p);
+    }
+
+    if (n % 2 != 0) {
+        hasOdd = true;
+        oddElement = input[n - 1];
+    }
+}
+
+static void splitPairsToChains(const std::vector<ElementPair> &pairs,
+    Chain &mainChain,
+    Chain &pendChain) {
+        mainChain.clear();
+        pendChain.clear();
+
+        for (std::size_t k = 0; k < pairs.size(); k++) {
+            const ElementPair &p = pairs[k];
+            if (p.first.first >= p.second.first) {
+                mainChain.push_back(p.first);
+                pendChain.push_back(p.second);
+            }
+            else {
+                mainChain.push_back(p.second);
+                pendChain.push_back(p.first);
+            }
+        }
+}
+
+static void sortChain(Chain &chain) {
+    if (chain.size() <= 1) {
+        return;
+    }
+
+    std::vector<ElementPair> pairs;
+    bool hasOdd = false;
+    ValueIndex oddElement;
+
+    makePairs(chain, pairs, hasOdd, oddElement);
+
+    Chain mainChain;
+    Chain pendChain;
+
+    splitPairsToChains(pairs, mainChain, pendChain);
+    sortChain(mainChain);
+    chain = mainChain;
 }
 
 void    PmergeMe::mergeInsertionVector(std::vector<int>& vec) {
+    Chain chain;
 
+    chain.reserve(vec.size());
+    for (std::size_t i = 0; i < vec.size(); i++) {
+        chain.push_back(std::make_pair(vec[i], i));
+    }
+
+    sortChain(chain);
+    for (std::size_t i = 0; i < chain.size(); ++i) {
+        std::cout << "(" << chain[i].first << "," << chain[i].second << ") ";
+    }
+    std::cout << std::endl;
 }
 
 // // Parametric Constructor
