@@ -179,7 +179,18 @@ static void sortChain(Chain &chain) {
 
     splitPairsToChains(pairs, mainChain, pendChain);
     sortChain(mainChain);
-    chain = mainChain;
+
+    Chain S;
+    S.reserve(chain.size());
+
+    S.push_back(pendChain[0]);
+    S.push_back(mainChain[0]);
+
+    for (std::size_t i = 1; i < mainChain.size(); i++) {
+        S.push_back(mainChain[i]);
+    }
+
+    chain = S;
 }
 
 void    PmergeMe::mergeInsertionVector(std::vector<int>& vec) {
