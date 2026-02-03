@@ -100,7 +100,7 @@ void    PmergeMe::sortContainers() {
     mergeInsertSortVector(vec_);
     // Clock end
     clock_t endVec = clock();
-    double timeTakenVec = static_cast<double>(endVec - startVec) / CLOCKS_PER_SEC * 1e6;
+    double timeTakenVec = static_cast<double>(endVec - startVec) / CLOCKS_PER_SEC * 1000000.0;
     std::cout << std::fixed << std::setprecision(5);
     std::cout << "Time to process a range of " << vec_.size() << " elements with std::vector : " << timeTakenVec << " us" << std::endl;
 
@@ -146,6 +146,11 @@ void    PmergeMe::generateInsertionSequence(size_t size, std::vector<int>& inser
 }
 
 void    PmergeMe::mergeInsertSortVector(std::vector<int>& vec) {
+    static int callCount = 0;
+    callCount++;
+    std::cout << "Call #" << callCount << ", size: " << vec.size() << std::endl;
+    
+    
     if (vec.size() <= 1) {
         return;
     }
