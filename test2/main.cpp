@@ -6,48 +6,52 @@ int main(int argc, char **argv) {
                   << " <positive_integer_sequence>" << std::endl;
         return 1;
     }
+    
     PmergeMe sorter;
     // Check if input is a valid sequence
-    sorter.validateInput(argc, argv);
+    try {
+        sorter.validateInput(argc, argv);
+    }
+    catch (std::exception &e) {
+        std::cerr << "Error\n" << e.what() << std::endl;
+        return 1;
+    }
     
-    // Display unsorted input sequence
-    std::cout << "Before: " << sorter.getInputSequence() << std::endl;
-
     // Create containers with the valid sequence
     sorter.buildContainers();
 
     // Sort containers and measure time taken
     sorter.sortContainers();
 
+    // Check if sorted sequence is the same in each container
     std::vector<int> sortedVec = sorter.getVector();
-    
+    std::deque<int> sortedDeq = sorter.getDeque();
+
+    if (!sorter.sequencesEqual(sortedVec, sortedDeq)) {
+        std::cerr << "Error\nContainers have different sequences" << std::endl;
+        return 1;
+    }
+
+    // Display unsorted input sequence
+    std::cout << "Before: " << sorter.getInputSequence() << std::endl;
+
     // Display sorted sequence
     std::cout << "After: ";
-    for (size_t i = 0; i < sortedVec.size(); ++i) {
-        std::cout << sortedVec[i];
-        if (i != sortedVec.size() - 1) {
-            std::cout << " ";
-        }
-    }
-    std::cout << std::endl;
+    sorter.printContainer(sortedVec);
 
-    //printContainer(generateJacobsthalSeq(20));
-    //printContainer(sorter.getVector());
-    //printContainer(sorter.getDeque());
+    std::cout << std::fixed << std::setprecision(5);
+    std::cout << "Time to process a range of "
+        << sorter.getVector().size()
+        << " elements with std::vector : "
+        << sorter.getTimeVector()
+        << " us" << std::endl;
 
-    // Handle input errors, maybe with try / catch
-    // Validate input: argc >= 2 Example: ./PmergeMe 4 2 5 1 OR ./PmergeMe "4 2 5 1" OR ./PmergeMe `shuf -i 1-100000 -n 3000 | tr "\n" " "`
-    //  - only positive integers
-    //  - no duplicates
-    // print "Before: ..."
-    //std::cout << "Before: " << sorter.getInputSequence() << std::endl;
-    // Use class methods to sort the container sequence using Ford-Johnson Algorithm
-    //  - Jacobsthal sequence: J(0)=0, J(1)=1, J(n)=J(n-1) + 2*J(n-2) [used to determine which pending element to insert next]
-    //sorter.sortVector();
-    //sorter.sortDeque();
-    // print "After: ..."
-    //std::cout << "After: " << sorter.getSortedSequence() << std::endl;
-    // print "Time to process a range of n elements with std::[..] : ... us"
-    // print "Time to process a range of n elements with std::[..] : ... us"
+    std::cout << std::fixed << std::setprecision(5);
+    std::cout << "Time to process a range of "
+        << sorter.getDeque().size()
+        << " elements with std::deque : "
+        << sorter.getTimeDeque()
+        << " us" << std::endl;
+
     return 0;
 }

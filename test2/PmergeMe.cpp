@@ -10,7 +10,7 @@ PmergeMe::PmergeMe(const PmergeMe &other) : vec_(other.vec_) {}
 PmergeMe&   PmergeMe::operator=(const PmergeMe &other) {
     if (this != &other) {
         this->vec_ = other.vec_;
-        //this->deq_ = other.deq_;
+        this->deq_ = other.deq_;
     }
     return *this;
 }
@@ -100,17 +100,23 @@ void    PmergeMe::sortContainers() {
     mergeInsertSortVector(vec_);
     // Clock end
     clock_t endVec = clock();
-    double timeTakenVec = static_cast<double>(endVec - startVec) / CLOCKS_PER_SEC * 1000000.0;
-    std::cout << std::fixed << std::setprecision(5);
-    std::cout << "Time to process a range of " << vec_.size() << " elements with std::vector : " << timeTakenVec << " us" << std::endl;
-
+    timeTakenVec_ = static_cast<double>(endVec - startVec) / CLOCKS_PER_SEC * 1000000.0;
+ 
     // Sorting Deque
     // Clock start
+    clock_t startDeq = clock();
     // Merge Insertion Sort Deque
+    mergeInsertSortDeque(deq_);
     // Clock end
-
-    // Print time taken for both sorts
+    clock_t endDeq = clock();
+    timeTakenDeq_ = static_cast<double>(endDeq - startDeq) / CLOCKS_PER_SEC * 1000000.0;
 }
+
+/*================================================================================
+    SORT VECTOR
+    - mergeInsertSortVector()
+    - sortPairsVector()
+================================================================================*/
 
 void    PmergeMe::sortPairsVector(std::vector<std::pair<int, int> >& pairs) {
     for (size_t i = 0; i < pairs.size(); i++) {
@@ -120,37 +126,7 @@ void    PmergeMe::sortPairsVector(std::vector<std::pair<int, int> >& pairs) {
     }
 }
 
-void    PmergeMe::generateInsertionSequence(size_t size, std::vector<int>& insertionSequence) {
-    insertionSequence.clear();
-    if (size <= 0) {
-        return;
-    }
-
-    insertionSequence.push_back(1);
-    if (size <= 1) {
-        return;
-    }
-
-    insertionSequence.push_back(3);
-    if (size <= 2) {
-        return;
-    }
-
-    for (size_t i =2; i < size; i++) {
-        size_t next = insertionSequence[i-1] + 2 * insertionSequence[i-2];
-        if (next > size) {
-            break;
-        }
-        insertionSequence.push_back(next);
-    }
-}
-
 void    PmergeMe::mergeInsertSortVector(std::vector<int>& vec) {
-    static int callCount = 0;
-    callCount++;
-    std::cout << "Call #" << callCount << ", size: " << vec.size() << std::endl;
-    
-    
     if (vec.size() <= 1) {
         return;
     }
@@ -225,9 +201,106 @@ void    PmergeMe::mergeInsertSortVector(std::vector<int>& vec) {
     vec = sortedSequence;
 }
 
+/*================================================================================
+    SORT DEQUE
+    - mergeInsertSortDeque()
+    - sortPairsDeque()
+================================================================================*/
+
+void    PmergeMe::sortPairsDeque(std::deque<std::pair<int, int> >& pairs) {
+    for (size_t i = 0; i < pairs.size(); i++) {
+        if (pairs[i].first < pairs[i].second) {
+            std::swap(pairs[i].first, pairs[i].second);
+        }
+    }
+}
+
+void    PmergeMe::mergeInsertSortDeque(std::deque<int>& deq) {
+    if (deq.size() <= 1) {
+        return;
+    }
+    
+    // Group elements into pairs
+    std::deque<std::pair<int, int> > pairs;
+    for (size_t i = 0; i + 1 < deq.size(); i += 2) {
+        pairs.push_back(std::make_pair(deq[i], deq[i + 1]));
+    }
+
+    // Check for unpaired element
+    int unpaired = 0;
+    if (deq.size() % 2 != 0) {
+        unpaired = deq.back();
+    }
+
+    // Sort each pair (larger first)
+    sortPairsDeque(pairs);
+
+    // Recursively sort the larger elements of each pair
+    std::deque<int> sortedSequence;
+    for (size_t i = 0; i < pairs.size(); i++) {
+        sortedSequence.push_back(pairs[i].first);
+    }
+    if (sortedSequence.size() > 1) {
+        mergeInsertSortDeque(sortedSequence);
+    }
+
+    // Sequence of the smaller elements to be inserted into the sorted sequence
+    std::deque<int> remainingElements;
+    for (size_t i = 0; i < pairs.size(); i++) {
+        remainingElements.push_back(pairs[i].second);
+    }
+
+    // Insert at the start of the sorted sequence the element that was paired 
+    // with the first and smallest element of the sequence
+    if (!remainingElements.empty()) {
+        sortedSequence.insert(sortedSequence.begin(), remainingElements[0]);
+    }
+
+    // Generate insertion order using Jacobsthal numbers for the insertion sequence
+    std::deque<int> insertionOrder;
+    std::deque<int> insertionSequence;
+    generateInsertionSequence(remainingElements.size(), insertionSequence);
+
+    for (size_t i = 1; i < insertionSequence.size(); i++) {
+        int start = insertionSequence[i-1];
+        int end = std::min(insertionSequence[i], static_cast<int>(remainingElements.size()));
+        for (int j = end - 1; j >= start; j--) {
+            insertionOrder.push_back(j);
+        }
+    }
+
+    // Insert remaining elements into the sorted sequence
+    for (size_t i = 0; i < insertionOrder.size(); i++) {
+        int index = insertionOrder[i];
+        if (index < static_cast<int>(remainingElements.size())) {
+            int valueToInsert = remainingElements[index];
+            // Binary search to find the correct position to insert
+            std::deque<int>::iterator pos = std::lower_bound(sortedSequence.begin(), sortedSequence.end(), valueToInsert);
+            sortedSequence.insert(pos, valueToInsert);
+        }
+    }
+
+    if (unpaired != 0) {
+        // Insert the unpaired element
+        std::deque<int>::iterator pos = std::lower_bound(sortedSequence.begin(), sortedSequence.end(), unpaired);
+        sortedSequence.insert(pos, unpaired);
+    }
+
+    // Update the original vector with the sorted sequence
+    deq = sortedSequence;
+}
+
 // Get the input sequence as a string
 const std::string&  PmergeMe::getInputSequence() const {
     return inputSequence_;
+}
+
+const double &PmergeMe::getTimeVector() const {
+    return timeTakenVec_;
+}
+
+const double &PmergeMe::getTimeDeque() const {
+    return timeTakenDeq_;
 }
 
 const std::vector<int>& PmergeMe::getVector() const {
