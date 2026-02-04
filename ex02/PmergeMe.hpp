@@ -6,6 +6,7 @@
 # include <iomanip>
 # include <cstdlib>
 # include <climits>
+# include <ctime>
 # include <vector>
 # include <deque>
 # include <set>
@@ -14,18 +15,21 @@
 
 class PmergeMe {
     private:
-        std::string inputSequence_;
-        std::vector<int> vec_;
-        std::deque<int> deq_;
-        double  timeTakenVec_;
-        double  timeTakenDeq_;
+        std::string inputSequence_;     // Original input as string for display
+        std::vector<int> vec_;          // Vector container for sorting
+        std::deque<int> deq_;           // Deque container for sorting
+        double  timeTakenVec_;          // Time taken to sort vector (microseconds)
+        double  timeTakenDeq_;          // Time taken to sort deque (microseconds)
 
+        // Ford-Johnson algorithm implementation for vector
         void    mergeInsertSortVector(std::vector<int>& vec);
         void    sortPairsVector(std::vector<std::pair<int, int> >& pairs);
 
+        // Ford-Johnson algorithm implementation for deque
         void    mergeInsertSortDeque(std::deque<int>& deq);
         void    sortPairsDeque(std::deque<std::pair<int, int> >& pairs);
 
+        // Generates Jacobsthal sequence for optimal insertion order
         template <typename Container>
         void    generateInsertionSequence(size_t size, Container &insertionSequence);
 
@@ -35,13 +39,17 @@ class PmergeMe {
         PmergeMe& operator=(const PmergeMe &other);
         ~PmergeMe();
         
+        // Validates input: positive integers, no duplicates
         void    validateInput(int argc, char **argv);
-        void    buildContainers();
+
+        // Builds containers from input, sorts them, and measures time
         void    sortContainers();
         
+        // Compares two containers element by element
         template <typename Container1, typename Container2>
         bool    sequencesEqual(const Container1 &seq1, const Container2 &seq2);
 
+        // Prints container elements space-separated
         template <typename Container>
         void    printContainer(const Container& cont) const;
 
@@ -51,6 +59,14 @@ class PmergeMe {
         const std::vector<int>& getVector() const;
         const std::deque<int>& getDeque() const;
 };
+
+/*
+ * Generates Jacobsthal sequence: 1, 3, 5, 11, 21, 43, 85, ...
+ * Formula: J(n) = J(n-1) + 2*J(n-2), with J(0)=0, J(1)=1
+ * 
+ * This sequence determines the optimal order for binary insertions,
+ * minimizing the maximum number of comparisons needed.
+ */
 
 template <typename Container>
 void    PmergeMe::generateInsertionSequence(size_t size, Container &insertionSequence) {

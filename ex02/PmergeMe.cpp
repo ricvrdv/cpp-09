@@ -78,44 +78,40 @@ void    PmergeMe::validateInput(int argc, char **argv) {
     inputSequence_ = oss.str();
 }
 
-// Build containers from the input sequence
-void    PmergeMe::buildContainers() {
-    std::istringstream iss(inputSequence_);
-    int value;
-
-    vec_.clear();
-    deq_.clear();
-    while (iss >> value) {
-        vec_.push_back(value);
-        deq_.push_back(value);
-    }
-}
-
 // Sort containers
 void    PmergeMe::sortContainers() {
-    // Sorting Vector
-    // Clock start
+    // Measure vector: build container + sort
     clock_t startVec = clock();
-    // Merge Insertion Sort Vector
+    std::istringstream issVec(inputSequence_);
+    int value;
+    vec_.clear();
+    while (issVec >> value) {
+        vec_.push_back(value);
+    }
     mergeInsertSortVector(vec_);
-    // Clock end
     clock_t endVec = clock();
     timeTakenVec_ = static_cast<double>(endVec - startVec) / CLOCKS_PER_SEC * 1000000.0;
  
-    // Sorting Deque
-    // Clock start
+    // Measure deque: build container + sort
     clock_t startDeq = clock();
-    // Merge Insertion Sort Deque
+    std::istringstream issDeq(inputSequence_);
+    deq_.clear();
+    while (issDeq >> value) {
+        deq_.push_back(value);
+    }
     mergeInsertSortDeque(deq_);
-    // Clock end
     clock_t endDeq = clock();
     timeTakenDeq_ = static_cast<double>(endDeq - startDeq) / CLOCKS_PER_SEC * 1000000.0;
 }
 
 /*================================================================================
-    SORT VECTOR
-    - mergeInsertSortVector()
-    - sortPairsVector()
+    FORD-JOHNSON MERGE-INSERTION SORT - VECTOR IMPLEMENTATION
+    
+    Steps:
+    1. Pair elements and ensure larger element is first in each pair
+    2. Recursively sort the sequence of larger elements
+    3. Insert smaller elements using Jacobsthal sequence ordering
+       to minimize comparisons during binary insertion
 ================================================================================*/
 
 void    PmergeMe::sortPairsVector(std::vector<std::pair<int, int> >& pairs) {
@@ -202,9 +198,10 @@ void    PmergeMe::mergeInsertSortVector(std::vector<int>& vec) {
 }
 
 /*================================================================================
-    SORT DEQUE
-    - mergeInsertSortDeque()
-    - sortPairsDeque()
+    FORD-JOHNSON MERGE-INSERTION SORT - DEQUE IMPLEMENTATION
+    
+    Identical algorithm to vector version, using std::deque for comparison
+    of performance characteristics between contiguous and chunked memory.
 ================================================================================*/
 
 void    PmergeMe::sortPairsDeque(std::deque<std::pair<int, int> >& pairs) {
@@ -290,7 +287,6 @@ void    PmergeMe::mergeInsertSortDeque(std::deque<int>& deq) {
     deq = sortedSequence;
 }
 
-// Get the input sequence as a string
 const std::string&  PmergeMe::getInputSequence() const {
     return inputSequence_;
 }

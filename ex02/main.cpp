@@ -1,5 +1,24 @@
 #include "PmergeMe.hpp"
 
+/*
+ * PmergeMe - Ford-Johnson Merge-Insert Sort Implementation
+ * 
+ * Compares the performance of the Ford-Johnson algorithm using two different
+ * STL containers: std::vector and std::deque. The program validates input,
+ * sorts identical sequences using both containers, and reports timing metrics
+ * to demonstrate performance differences between contiguous (vector) and
+ * chunked (deque) memory layouts.
+ */
+
+void    printTimingResult(const std::string& containerName, size_t size, double time) {
+    std::cout << std::fixed << std::setprecision(2);
+    std::cout << "Time to process a range of "
+        << size 
+        << " elements with " << containerName << " : "
+        << time
+        << " us" << std::endl;
+}
+
 int main(int argc, char **argv) {
     if (argc < 2) {
         std::cerr << "Error\nUsage: " << argv[0]
@@ -8,7 +27,7 @@ int main(int argc, char **argv) {
     }
     
     PmergeMe sorter;
-    // Check if input is a valid sequence
+    
     try {
         sorter.validateInput(argc, argv);
     }
@@ -16,14 +35,11 @@ int main(int argc, char **argv) {
         std::cerr << "Error\n" << e.what() << std::endl;
         return 1;
     }
-    
-    // Create containers with the valid sequence
-    sorter.buildContainers();
 
-    // Sort containers and measure time taken
+    // Build containers, sort them, and measure performance for each
     sorter.sortContainers();
 
-    // Check if sorted sequence is the same in each container
+    // Verify both implementations produce identical results
     std::vector<int> sortedVec = sorter.getVector();
     std::deque<int> sortedDeq = sorter.getDeque();
 
@@ -39,19 +55,8 @@ int main(int argc, char **argv) {
     std::cout << "After: ";
     sorter.printContainer(sortedVec);
 
-    std::cout << std::fixed << std::setprecision(5);
-    std::cout << "Time to process a range of "
-        << sorter.getVector().size()
-        << " elements with std::vector : "
-        << sorter.getTimeVector()
-        << " us" << std::endl;
-
-    std::cout << std::fixed << std::setprecision(5);
-    std::cout << "Time to process a range of "
-        << sorter.getDeque().size()
-        << " elements with std::deque : "
-        << sorter.getTimeDeque()
-        << " us" << std::endl;
+    printTimingResult("std::vector", sorter.getVector().size(), sorter.getTimeVector());
+    printTimingResult("std::deque ", sorter.getDeque().size(), sorter.getTimeDeque());
 
     return 0;
 }
