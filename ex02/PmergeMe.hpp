@@ -7,6 +7,7 @@
 # include <cstdlib>
 # include <climits>
 # include <ctime>
+# include <cctype>
 # include <vector>
 # include <deque>
 # include <set>
@@ -53,11 +54,33 @@ class PmergeMe {
         template <typename Container>
         void    printContainer(const Container& cont) const;
 
+        static bool isDigitsOnly(const std::string &s);
+        static int  toInt(const std::string &s);
+
         const std::string &getInputSequence() const;
         const double &getTimeVector() const;
         const double &getTimeDeque() const;
         const std::vector<int>& getVector() const;
         const std::deque<int>& getDeque() const;
+
+        class InvalidInputException : public std::exception {
+            private:
+                std::string message_;
+            public:
+                explicit InvalidInputException(const std::string& msg);
+                virtual const char* what() const throw();
+                virtual ~InvalidInputException() throw();
+        };
+
+        class DuplicateValueException : public std::exception {
+            public:
+                virtual const char* what() const throw();
+        };
+
+        class EmptyInputException : public std::exception {
+            public:
+                virtual const char* what() const throw();
+        };
 };
 
 /*

@@ -19,13 +19,13 @@ PmergeMe&   PmergeMe::operator=(const PmergeMe &other) {
 PmergeMe::~PmergeMe() {}
 
 // Helper function to check if number is a positive integer
-bool isPositiveInteger(const std::string &s) {
+bool PmergeMe::isDigitsOnly(const std::string &s) {
     if (s.empty()) {
         return false;
     }
 
     for (size_t i = 0; i < s.length(); i++) {
-        if (!std::isdigit(s[i])) {
+        if (!std::isdigit(static_cast<unsigned char>(s[i]))) {
             return false;
         }
     }
@@ -33,16 +33,21 @@ bool isPositiveInteger(const std::string &s) {
 }
 
 // Helper function to convert string to int
-int     toInt(const std::string &s) {
-    std::istringstream iss(s);
+int     PmergeMe::toInt(const std::string &s) {
+    char *endptr;
     long value;
 
-    iss >> value;
-    if (iss.fail() || !iss.eof()) {
-        throw std::runtime_error("Invalid number");
+    value = std::strtol(s.c_str(), &endptr, 10);
+    if (*endptr != '\0') {
+        throw InvalidInputException("Invalid number format");
     }
-    if (value <= 0 || value > INT_MAX)
-        throw std::runtime_error("Out of range");
+    if (value <= 0) {
+        throw InvalidInputException("Number must be positive");
+    }
+    if (value > INT_MAX) {
+        throw InvalidInputException("Number exceeds maximum value");
+    }
+    
     return static_cast<int>(value);
 }
 
@@ -50,30 +55,30 @@ int     toInt(const std::string &s) {
 void    PmergeMe::validateInput(int argc, char **argv) {
     std::set<int> seen;
     std::ostringstream oss;
-    bool first = true;
+    bool isFirstElement = true;
 
     for (int i = 1; i < argc; i++) {
         std::istringstream iss(argv[i]);
         std::string token;
 
         while (iss >> token) {
-            if (!isPositiveInteger(token)) {
-                throw std::runtime_error("Invalid token");
+            if (!isDigitsOnly(token)) {
+                throw InvalidInputException("Invalid token: must be positive integer");
             }
             int value = toInt(token);
 
             if (!seen.insert(value).second)
-                throw std::runtime_error("Duplicate");
+                throw DuplicateValueException();
 
-            if (!first) {
+            if (!isFirstElement) {
                 oss << " ";
             }
             oss << value;
-            first = false;
+            isFirstElement = false;
         }
     }
-    if (first)
-        throw std::runtime_error("Empty input");
+    if (isFirstElement)
+        throw EmptyInputException();
 
     inputSequence_ = oss.str();
 }
@@ -305,4 +310,24 @@ const std::vector<int>& PmergeMe::getVector() const {
 
 const std::deque<int>& PmergeMe::getDeque() const {
     return deq_;
+}
+
+/*================================================================================
+    CUSTOM EXCEPTIONS
+================================================================================*/
+
+PmergeMe::InvalidInputException::InvalidInputException(const std::string& msg) : message_(msg) {}
+
+PmergeMe::InvalidInputException::~InvalidInputException() throw() {}
+
+const char  *PmergeMe::InvalidInputException::what() const throw() {
+    return message_.c_str();
+}
+
+const char  *PmergeMe::DuplicateValueException::what() const throw() {
+    return "Duplicate value found";
+}
+
+const char  *PmergeMe::EmptyInputException::what() const throw() {
+    return "Empty input sequence";
 }
